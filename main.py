@@ -160,6 +160,9 @@ def parse_text(text, username, message_id):
             elif arena_enabled and gold >= 5 and '🔎Поиск соперника' not in action_list and time() - lt_arena > 3600:
                 action_list.append('🔎Поиск соперника')
 
+        elif les_enabled and text.find('Ты заработал') != -1:
+            fwd(message_id)
+            
         elif arena_enabled and text.find('выбери точку атаки и точку защиты') != -1:
             lt_arena = time()
             attack_chosen = arena_attack[random.randint(0, 2)]
