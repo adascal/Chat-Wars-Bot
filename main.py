@@ -135,7 +135,7 @@ def parse_text(text, username, message_id):
         if corovan_enabled and text.find(' /go') != -1:
             action_list.append(orders['corovan'])
 
-        if orders['corovan'] in action_list and time() - current_order['time'] < 3600:
+        if corovan_enabled and orders['corovan'] in action_list:
             update_order(current_order['order'])
 
         elif text.find('Битва пяти замков через') != -1:
@@ -161,7 +161,8 @@ def parse_text(text, username, message_id):
                 action_list.append('🔎Поиск соперника')
 
         elif les_enabled and text.find('Ты заработал') != -1:
-            fwd(message_id)
+            fwd(admin_username, message_id)
+            update_order(current_order['order'])
             
         elif arena_enabled and text.find('выбери точку атаки и точку защиты') != -1:
             lt_arena = time()
@@ -170,6 +171,9 @@ def parse_text(text, username, message_id):
             log('Атака: {0}, Защита: {1}'.format(attack_chosen, cover_chosen))
             action_list.append(attack_chosen)
             action_list.append(cover_chosen)
+        
+        elif arena_enabled and text.find('Победил воин') != -1:
+            update_order(current_order['order'])
 
     elif bot_enabled and order_enabled and username in order_usernames:
         if text.find(orders['red']) != -1:
