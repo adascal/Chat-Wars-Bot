@@ -162,13 +162,20 @@ def parse_text(text, username, message_id):
                     return
             log('Времени достаточно')
             # теперь узнаем, сколько у нас выносливости и золота
-            m = re.search('Золото: (-*[0-9]+)\\n.*Выносливость: ([0-9]+) из', text)
+            m = re.search('Золото: (-*[0-9]+)\\n.*Выносливость: ([0-9]+) из ([0-9]+)', text)
             gold = int(m.group(1))
             endurance = int(m.group(2))
+            minEndurance = 1 # int(m.group(2))
+            maxEndurance = 5 # int(m.group(3))
+            enduranceToGo = random.randint(minEndurance, maxEndurance)
+
             log('Золото: {0}, выносливость: {1}'.format(gold, endurance))
-            if les_enabled and endurance > 0 and '🌲Лес' not in action_list:
+            if les_enabled and endurance > 0 and enduranceToGo >= enduranceToGo and '🌲Лес' not in action_list:
+                action_list.append('🗺 Квесты')
                 action_list.append('🌲Лес')
             elif arena_enabled and gold >= 5 and '🔎Поиск соперника' not in action_list and time() - lt_arena > 3600:
+                action_list.append('🏰Замок')
+                action_list.append('📯Арена')
                 action_list.append('🔎Поиск соперника')
 
         elif les_enabled and text.find('Ты заработал') != -1:
