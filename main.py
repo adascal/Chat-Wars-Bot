@@ -281,10 +281,10 @@ def parse_text(text, username, message_id):
         # Вкл/выкл команд
         if text == '#enable_order_restore':
             order_restore_enabled = True
-            send_msg(admin_username, 'Восстановление приказы успешно включено')
+            send_msg(admin_username, 'Восстановление приказа успешно включено')
         if text == '#disable_order_restore':
             order_restore_enabled = False
-            send_msg(admin_username, 'Восстановление приказы успешно выключено')
+            send_msg(admin_username, 'Восстановление приказа успешно выключено')
 
         # Вкл/выкл авто деф
         if text == '#enable_auto_def':
