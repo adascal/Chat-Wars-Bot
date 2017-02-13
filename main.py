@@ -338,7 +338,7 @@ def parse_text(text, username, message_id):
                 'Приказы включены: {7}',
                 'Восстановление приказа включено: {8}',
                 'Авто деф включен: {9}',
-            ]).format([
+            ]).format(
                 bot_enabled,
                 arena_enabled,
                 arena_fwd_enabled,
@@ -348,8 +348,8 @@ def parse_text(text, username, message_id):
                 corovan_fwd_enabled,
                 order_enabled,
                 order_restore_enabled,
-                auto_def_enabled,
-            ]))
+                auto_def_enabled
+            ))
 
         # Информация о герое
         if text == '#hero':
