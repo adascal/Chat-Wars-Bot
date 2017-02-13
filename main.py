@@ -258,7 +258,7 @@ def parse_text(text, username, message_id):
         if text == '#enable_les_fwd':
             les_fwd_enabled = True
             send_msg(admin_username, 'Форвард леса успешно включен')
-        if text == '#disable_les':
+        if text == '#disable_les_fwd':
             les_fwd_enabled = False
             send_msg(admin_username, 'Форвард леса успешно выключен')
 
