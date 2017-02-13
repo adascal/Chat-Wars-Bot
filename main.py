@@ -81,9 +81,11 @@ hero_message_id = ''
 
 bot_enabled = True
 arena_enabled = True
+arena_fwd_enabled = False
 les_enabled = True
-les_fwd_enabled = True
+les_fwd_enabled = False
 corovan_enabled = True
+corovan_fwd_enabled = False
 order_enabled = True
 order_restore_enabled = False
 auto_def_enabled = True
@@ -127,9 +129,11 @@ def parse_text(text, username, message_id):
     global hero_message_id
     global bot_enabled
     global arena_enabled
+    global arena_fwd_enabled
     global les_enabled
     global les_fwd_enabled
     global corovan_enabled
+    global corovan_fwd_enabled
     global order_enabled
     global order_restore_enabled
     global auto_def_enabled
@@ -139,8 +143,11 @@ def parse_text(text, username, message_id):
         if corovan_enabled and text.find(' /go') != -1:
             action_list.append(orders['corovan'])
 
-        if order_restore_enabled and orders['corovan'] in action_list:
-            update_order(current_order['order'])
+        if corovan_enabled and (text.find('Вы задержали') != -1 or text.find('Вы пытались остановить') != -1):
+            if corovan_fwd_enabled:
+                fwd(admin_username, message_id)
+            if order_restore_enabled:
+                update_order(current_order['order'])
 
         elif text.find('Битва пяти замков через') != -1:
             hero_message_id = message_id
@@ -164,10 +171,11 @@ def parse_text(text, username, message_id):
             elif arena_enabled and gold >= 5 and '🔎Поиск соперника' not in action_list and time() - lt_arena > 3600:
                 action_list.append('🔎Поиск соперника')
 
-        elif order_restore_enabled and text.find('Ты заработал') != -1:
-            update_order(current_order['order'])
+        elif les_enabled and text.find('Ты заработал') != -1:
             if les_fwd_enabled:
                 fwd(admin_username, message_id)
+            if order_restore_enabled:
+                update_order(current_order['order'])
 
         elif arena_enabled and text.find('выбери точку атаки и точку защиты') != -1:
             lt_arena = time()
@@ -177,8 +185,11 @@ def parse_text(text, username, message_id):
             action_list.append(attack_chosen)
             action_list.append(cover_chosen)
 
-        elif order_restore_enabled and text.find('Победил воин') != -1:
-            update_order(current_order['order'])
+        elif arena_enabled and text.find('Победил воин') != -1:
+            if arena_fwd_enabled:
+                fwd(admin_username, message_id)
+            if order_restore_enabled:
+                update_order(current_order['order'])
 
     elif bot_enabled and order_enabled and username in order_usernames:
         if text.find(orders['red']) != -1:
@@ -207,12 +218,16 @@ def parse_text(text, username, message_id):
                 '#disable_bot - Выключить бота',
                 '#enable_arena - Включить арену',
                 '#disable_arena - Выключить арену',
+                '#enable_arena_fwd - Включить форвард арены',
+                '#disable_arena_fwd - Выключить форвард арены',
                 '#enable_les - Включить лес',
                 '#disable_les - Выключить лес',
                 '#enable_les_fwd - Включить форвард леса',
                 '#disable_les_fwd - Выключить форвард леса',
                 '#enable_corovan - Включить корован',
                 '#disable_corovan - Выключить корован',
+                '#enable_corovan_fwd - Включить форвард корована',
+                '#disable_corovan_fwd - Выключить форвард корована',
                 '#enable_order - Включить приказы',
                 '#disable_order - Выключить приказы',
                 '#enable_order_restore - Включить восстановление приказа',
@@ -246,6 +261,14 @@ def parse_text(text, username, message_id):
             arena_enabled = False
             send_msg(admin_username, 'Арена успешно выключена')
 
+        # Вкл/выкл форвард арены
+        if text == '#enable_arena_fwd':
+            arena_fwd_enabled = True
+            send_msg(admin_username, 'Форвард арены успешно включен')
+        if text == '#disable_arena_fwd':
+            arena_fwd_enabled = False
+            send_msg(admin_username, 'Форвард арены успешно выключен')
+
         # Вкл/выкл леса
         if text == '#enable_les':
             les_enabled = True
@@ -270,6 +293,14 @@ def parse_text(text, username, message_id):
             corovan_enabled = False
             send_msg(admin_username, 'Корованы успешно выключены')
 
+        # Вкл/выкл форвард корована
+        if text == '#enable_corovan_fwd':
+            corovan_fwd_enabled = True
+            send_msg(admin_username, 'Форвард корована успешно включен')
+        if text == '#disable_corovan_fwd':
+            corovan_fwd_enabled = False
+            send_msg(admin_username, 'Форвард корована успешно выключен')
+
         # Вкл/выкл команд
         if text == '#enable_order':
             order_enabled = True
@@ -278,7 +309,7 @@ def parse_text(text, username, message_id):
             order_enabled = False
             send_msg(admin_username, 'Приказы успешно выключены')
 
-        # Вкл/выкл команд
+        # Вкл/выкл восстановление команд
         if text == '#enable_order_restore':
             order_restore_enabled = True
             send_msg(admin_username, 'Восстановление приказа успешно включено')
@@ -299,13 +330,26 @@ def parse_text(text, username, message_id):
             send_msg(admin_username, '\n'.join([
                 'Бот включен: {0}',
                 'Арена включена: {1}',
-                'Лес включен: {2}',
-                'Форвард леса включен: {3}',
-                'Корованы включены: {4}',
-                'Приказы включены: {4}',
-                'Восстановление приказа включено: {5}',
-                'Авто деф включен: {6}',
-            ]).format(bot_enabled, arena_enabled, les_enabled, les_fwd_enabled, corovan_enabled, order_enabled, order_restore_enabled, auto_def_enabled))
+                'Форвард арены включена: {2}',
+                'Лес включен: {3}',
+                'Форвард леса включен: {4}',
+                'Корованы включены: {5}',
+                'Форвард корована включен: {6}',
+                'Приказы включены: {7}',
+                'Восстановление приказа включено: {8}',
+                'Авто деф включен: {9}',
+            ]).format([
+                bot_enabled,
+                arena_enabled,
+                arena_fwd_enabled,
+                les_enabled,
+                les_fwd_enabled,
+                corovan_enabled,
+                corovan_fwd_enabled,
+                order_enabled,
+                order_restore_enabled,
+                auto_def_enabled,
+            ]))
 
         # Информация о герое
         if text == '#hero':
