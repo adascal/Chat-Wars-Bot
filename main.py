@@ -170,7 +170,7 @@ def parse_text(text, username, message_id):
             enduranceToGo = random.randint(minEndurance, maxEndurance)
 
             log('Золото: {0}, выносливость: {1}'.format(gold, endurance))
-            if les_enabled and endurance > 0 and enduranceToGo >= enduranceToGo and '🌲Лес' not in action_list:
+            if les_enabled and endurance > 0 and endurance >= enduranceToGo and '🌲Лес' not in action_list:
                 action_list.append('🗺 Квесты')
                 action_list.append('🌲Лес')
             elif arena_enabled and gold >= 5 and '🔎Поиск соперника' not in action_list and time() - lt_arena > 3600:
